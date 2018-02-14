@@ -3,9 +3,9 @@
     <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="exit">Exit</string>
-    <string name="job_for_mutual_evaluation">Job for mutual evaluation</string>
-    <string name="n2">№2</string>
     <string name="google">Google</string>
     <string name="yandex">Yandex</string>
     <string name="bing">Bing</string>
+    <string name="job_for_mutual_evaluation">Select RU locale in android setings</string>
+    <string name="n2">" "</string>
 </resources>

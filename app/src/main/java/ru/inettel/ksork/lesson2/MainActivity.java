@@ -13,24 +13,16 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FragmentManager fragmentManager = getSupportFragmentManager();
-
-    private void showMessage(@StringRes int message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void switchFragment(Fragment fragment) {
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, fragment)
-                .addToBackStack(null)
-                .commit();
-    }
+    private SettingsHelper mSettings;
+    private FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_main);
-        fragmentManager.beginTransaction().add(R.id.fragmentContainer, MainFragment.newInstance()).commit();
+        mFragmentManager = getSupportFragmentManager();
+        mSettings = SettingsHelper.getInstance(getApplicationContext());
+        mFragmentManager.beginTransaction().add(R.id.fragmentContainer, MainFragment.newInstance()).commit();
     }
 
     @Override
@@ -44,15 +36,27 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menuSettings:
                 showMessage(R.string.settings);
-                switchFragment(SettingsFragment.newInstance());
+                switchFragment(SettingsFragment.newInstance(mSettings));
                 break;
             case R.id.menuSearch:
                 showMessage(R.string.search);
+                switchFragment(SearchFragment.newInstance(mSettings));
                 break;
             case R.id.menuExit:
                 showMessage(R.string.exit);
                 finish();
         }
         return true;
+    }
+
+    private void showMessage(@StringRes int message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void switchFragment(Fragment fragment) {
+        mFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

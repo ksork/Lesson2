@@ -1,7 +1,5 @@
 package ru.inettel.ksork.lesson2;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,36 +12,17 @@ import android.widget.RadioGroup;
 
 public class SettingsFragment extends Fragment {
 
-    private static final int GOOGLE = 1;
-    private static final int YANDEX = 2;
-    private static final int BING = 3;
-    private static final String SEARCH_ENGINE_KEY = "SEARCH_ENGINE_KEY";
-
-
     private RadioGroup mSearchEngine;
     private RadioButton mGoogle;
     private RadioButton mYandex;
     private RadioButton mBing;
 
-    private SharedPreferences mPref;
+    private SettingsHelper mSettings;
 
-    public static Fragment newInstance() {
-        return new SettingsFragment();
-    }
-
-    private void changeSearchEngine(int checkedId) {
-        int searchEngine = 0;
-        switch (checkedId) {
-            case R.id.rbGoogle:
-                searchEngine = GOOGLE;
-                break;
-            case R.id.rbYandex:
-                searchEngine = YANDEX;
-                break;
-            case R.id.rbBing:
-                searchEngine = BING;
-        }
-        mPref.edit().putInt(SEARCH_ENGINE_KEY, searchEngine).commit();
+    public static Fragment newInstance(SettingsHelper settingsHelper) {
+        SettingsFragment instance = new SettingsFragment();
+        instance.setSettings(settingsHelper);
+        return instance;
     }
 
     @Nullable
@@ -55,21 +34,40 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mSearchEngine = view.findViewById(R.id.rgSearchEngine);
         mGoogle = view.findViewById(R.id.rbGoogle);
         mYandex = view.findViewById(R.id.rbYandex);
         mBing = view.findViewById(R.id.rbBing);
-        mPref = this.getActivity().getPreferences(Context.MODE_PRIVATE);
-        switch (mPref.getInt(SEARCH_ENGINE_KEY, GOOGLE)) {
-            case GOOGLE:
+
+        switch (mSettings.loadEngineId()) {
+            case SettingsHelper.GOOGLE_ID:
                 mGoogle.setChecked(true);
                 break;
-            case YANDEX:
+            case SettingsHelper.YANDEX_ID:
                 mYandex.setChecked(true);
                 break;
-            case BING:
+            case SettingsHelper.BING_ID:
                 mBing.setChecked(true);
         }
+
         mSearchEngine.setOnCheckedChangeListener((group, checkedId) -> changeSearchEngine(checkedId));
+    }
+
+    private void changeSearchEngine(int checkedId) {
+        switch (checkedId) {
+            case R.id.rbGoogle:
+                mSettings.save(SettingsHelper.GOOGLE_ID);
+                break;
+            case R.id.rbYandex:
+                mSettings.save(SettingsHelper.YANDEX_ID);
+                break;
+            case R.id.rbBing:
+                mSettings.save(SettingsHelper.BING_ID);
+        }
+    }
+
+    private void setSettings(SettingsHelper settingsHelper) {
+        mSettings = settingsHelper;
     }
 }
